@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script src="./node_modules/art-template/lib/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/template" id="tpl">
+			<!DOCTYPE html>
+		    <html lang="en">
+		    <head>
+		      <meta charset="UTF-8">
+		      <title>Document</title>
+		    </head>
+		    <body>
+		      <p>大家好，我叫：{{ name }}</p>
+		      <p>我今年 {{ age }} 岁了</p>
+		      <h1>我来自 {{ province }}</h1>
+		      <p>我喜欢：{{each hobbies}} {{ $value }} {{/each}}</p>
+		    </body>
+   		 </html>
+		</script>
+		<script>
+			var ret = template('tpl',{
+				name:'youngdeng',
+				age:22,
+				province:'jiangxi',
+				hobbies:['basketball','soccer','tennis']
+			})
+			
+			console.log(ret)
+		</script>
+	</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="../../favicon.ico">
+  <title>Dashboard Template for Bootstrap</title>
+  <!-- Bootstrap core CSS -->
+  <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="../public/css/main.css" rel="stylesheet">
+</head>
+
+<body>
+ 
+  <div class="container-fluid">
+    <div class="row">
+      
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <h2 class="sub-header">添加学生</h2>
+        <form action="/students/edit" method="post">
+          <!-- 
+            用来放一些不希望被用户看见，但是需要被提交到服务端的数据
+           -->
+          <input type="hidden" name="id" value="{{ student.id }}">
+          <div class="form-group">
+            <label for="">姓名</label>
+            <input type="text" class="form-control" id="" name="name" required minlength="2" maxlength="10" value="{{ student.name }}">
+          </div>
+          <div class="form-group">
+            <label for="">性别</label>
+            <div>
+              <label class="radio-inline">
+                <input type="radio" name="gender" id="" value="0" checked> 男
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="gender" id="" value="1"> 女
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="">年龄</label>
+            <input class="form-control" type="number" id="" name="age" value="{{ student.age }}" required min="1" max="150">
+          </div>
+          <div class="form-group">
+            <label for="">爱好</label>
+            <input class="form-control" type="text" id="" name="hobbies" value="{{ student.hobbies }}">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
