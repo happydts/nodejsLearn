@@ -1,23 +1,29 @@
 
 var express = require('express')
 var fs = require('fs')
+
+var student = require('./student')
+
 var router = express.Router()
 
 /*
  * 渲染学生列表页面
  */
 router.get('/students', function (req, res) {
- fs.readFile('./db.json',function(err,data){
- 	if(err){
- 		return 	res.send('文件读取失败')
- 	}
- 	var students = JSON.parse(data).students
- 	res.render('index.html',{
- 		students:students
- 	})
- })
+   student.find(function(err,data){
+   		if(err){
+   			return res.send('没有数据')
+   		}
+   		
+
+   		
+   		res.render('index.html',{
+   			students:data
+   		})
+   })
  
 })
+
 
 /*
  * 渲染添加学生页面
@@ -30,7 +36,16 @@ router.get('/students/new', function (req, res) {
  * 处理添加学生
  */
 router.post('/students/new', function (req, res) {
+  var stu = req.body
+  student.addStudent(stu,function(){
+	  if(err)
+	  {
+	   return res.send('添加失败')
+	  }
+	  
+  	res.redirect('/students')
   
+  })
 })
 
 /*
