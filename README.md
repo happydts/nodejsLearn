@@ -1,6 +1,6 @@
 # NodeJs 学习
 
-## 常见问题处理 
+## 常见问题处理
 
 ### 解决nodejs被墙问题
 
@@ -51,6 +51,49 @@ app.set('views',想要修改的路径)
 var query = req.query
 ```
 
+### javacript api
+
+#### json文件查找
+
+```java
+	var ret = students.find(function (item) {
+      return item.id === parseInt(id)
+    })
+        
+  	返回一个对象
+```
+
+#### json文件查找下标
+
+ ```javascript
+	var retId = students.findIndex(function(item){
+			return item.id  === id
+		})
+ ```
+#### json文件删除
+
+ ```javascript
+		students.splice(通过查找到的下标,1)	
+
+ ```
+
+
+### fs.writeFile()
+
+```javascript
+ // 把字符串保存到文件中
+    fs.writeFile(dbPath, fileData, function (err) {
+      if (err) {
+        // 错误就是把错误对象传递给它
+        return callback(err)
+      }
+      // 成功就没错，所以错误对象是 null
+      callback(null)
+    })
+```
+
+
+
 ### 关于url和 Java不同
 
 #### 关于nodeJs
@@ -74,6 +117,39 @@ var query = req.query
 ####  而对于java
 
 `webapp`中的 `html` 文件请求 `css` 和 `js` 还是用文件路径，但是要放行静态资源
+
+#### json字符串转换对象
+```javascript
+	JSON.stringify({
+ 		students:students
+ 	})
+```
+这样的话转出来的就是这样的格式
+
+```json
+{
+	"students":[
+			{"id":1,"name":"张三三","gender":"0","age":"22","hobbies":"吃饭、睡觉、打豆豆"},
+			{"id":2,"name":"张三三","gender":"0","age":"22","hobbies":"吃饭、睡觉、打豆豆"},
+			{"id":3,"name":"张三三","gender":"0","age":"22","hobbies":"吃
+	]
+}
+```
+```javascript
+JSON.stringify(students)
+```
+而这样的话转出来的就是这样的格式
+
+```json
+{
+	
+			{"id":1,"name":"张三三","gender":"0","age":"22","hobbies":"吃饭、睡觉、打豆豆"},
+			{"id":2,"name":"张三三","gender":"0","age":"22","hobbies":"吃饭、睡觉、打豆豆"},
+			{"id":3,"name":"张三三","gender":"0","age":"22","hobbies":"吃
+
+}
+```
+
 
 ### 从文件读取的数据一定是字符串，所以一定要手动转换成对象，通过url拿到的也是字符串
 
@@ -116,8 +192,9 @@ app.get('/', function (req, res) {
 + res.send()方法默认会设置utf-8编码，最多只能发送字符串，而res.render()可以直接设置views下的页面
 
 
-## 表单提交
-###get提交
+## 表单提交 body-parser
+### get提交
+
 - 安装
 ```shell
 	npm install path
@@ -133,8 +210,15 @@ app.get('/', function (req, res) {
 	var query = parseobj.query
 ```
 
+- express
 
-###post提交
+- ```javascript
+  req.query
+  ```
+
+- 
+
+### post提交
 
 - 安装
 
@@ -150,6 +234,7 @@ var bodyParser = require('body-parser')
 
 var app = express()
 
+// 配置模板引擎和 body-parser 一定要在 app.use(router) 挂载路由之前
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -161,6 +246,14 @@ app.use(function (req, res) {
 var obj= req.body
 })
 ```
+
+- body-parser
+
+- ```java
+  req.body
+  ```
+
+- 
 
 ## Router路由
 
