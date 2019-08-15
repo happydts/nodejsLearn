@@ -77,6 +77,40 @@ var query = req.query
 
  ```
 
+#### 封装ajax方法
+
+```javascript
+ <script>
+    // setTimeout
+    // readFile
+    // wirteFile
+    // readdir
+    // ajax
+    // 往往异步 API 都伴随有一个回调函数
+    // var ret = fn()
+    // $.get('dsadas', fucntion () {})
+    // var ret = $.get()
+
+    function get(url, callback) {
+      var oReq = new XMLHttpRequest()
+      // 当请求加载成功之后要调用指定的函数
+      oReq.onload = function () {
+        // 我现在需要得到这里的 oReq.responseText
+        callback(oReq.responseText)
+      }
+      oReq.open("get", url, true)
+      oReq.send()
+    }
+
+    get('data.json', function (data) {
+      console.log(data)
+    })
+  </script>
+```
+
+
+
+
 
 ### fs.writeFile()
 
@@ -91,6 +125,8 @@ var query = req.query
       callback(null)
     })
 ```
+
+
 
 
 
@@ -141,13 +177,13 @@ JSON.stringify(students)
 而这样的话转出来的就是这样的格式
 
 ```json
-{
+[
 	
 			{"id":1,"name":"张三三","gender":"0","age":"22","hobbies":"吃饭、睡觉、打豆豆"},
 			{"id":2,"name":"张三三","gender":"0","age":"22","hobbies":"吃饭、睡觉、打豆豆"},
 			{"id":3,"name":"张三三","gender":"0","age":"22","hobbies":"吃
 
-}
+]
 ```
 
 
@@ -317,6 +353,315 @@ module.exports = router
 var router = require('./router')
 
 //创建路由
-app.use(router)
+app.use(orouter)
+```
+
+## mongod数据库
+
+### 查看数据库版本
+
+```shell
+ mongod --version
+```
+
+### 启动和关闭数据库
+
+第一次需要在启动盘符新建data/db文件夹
+
+```shell
+mongod #启动
+# crtl+c关闭
+```
+
+如果想要更改指定操作文件夹
+
+```shell
+mongod --dbpath=数据盘符目录
+```
+
+### 连接数据库
+
+```shell
+# 该命令默认连接本机的mongo数据库
+mongo
+```
+
+退出
+
+```shell
+exit
+```
+
+### 基本命令
+
++ `show  dbs`
+  + 查看显示所有数据库
+
+- ` use 数据库名称`
+- `db`
+  - 查看当前使用的数据库
+
++ show collections
+  + 查看当前数据库里的集合
+
++ 插入数据
+  + db.students.insertOne({"name":"youngdeng"}
+
++ 查找数据
+  + db.students.find()
+
+### 在node中使用mogodb
+
+#### 官方模式
+
+[mongodb官方文档](https://www.npmjs.com/package/mongodb)
+
+#### 更便捷的方式
+
+[mongoose](https://mongoosejs.com/)
+
+```shell
+npm i mongoose
+```
+实例
+
+```java
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/test', {useNewUrlParser: true});
+
+const Cat = mongoose.model('Cat', { name: String });
+
+const kitty = new Cat({ name: 'Zildjian' });
+kitty.save().then(() => console.log('meow'));
+```
+
+```javascript
+var mongoose = require('mongoose')
+
+// 连接数据库
+mongoose.connect('mongodb://localhost/test', { useMongoClient: true })
+
+var Schema = mongoose.Schema
+
+var userSchema = new Schema({
+  email: {
+    type: String,
+    required: true
+  },
+  nickname: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  created_time: {
+    type: Date,
+    // 注意：这里不要写 Date.now() 因为会即刻调用
+    // 这里直接给了一个方法：Date.now
+    // 当你去 new Model 的时候，如果你没有传递 create_time ，则 mongoose 就会调用 default 指定的Date.now 方法，使用其返回值作为默认值
+    default: Date.now
+  },
+  last_modified_time: {
+    type: Date,
+    default: Date.now
+  },
+  avatar: {
+    type: String,
+    default: '/public/img/avatar-default.png'
+  },
+  bio: {
+    type: String,
+    default: ''
+  },
+  gender: {
+    type: Number,
+    enum: [-1, 0, 1],
+    default: -1
+  },
+  birthday: {
+    type: Date
+  },
+  status: {
+    type: Number,
+    // 0 没有权限限制
+    // 1 不可以评论
+    // 2 不可以登录
+    enum: [0, 1, 2],
+    default: 0
+  }
+})
+
+module.exports = mongoose.model('User', userSchema)
+
+```
+
+
+
+### 查询数据
+
+```javascript
+User.findOne({
+    email: body.email,
+    password: md5(md5(body.password))
+  }, function (err, user) {
+    if (err) {
+      return res.status(500).json({
+        err_code: 500,
+        message: err.message
+      })
+    }
+    
+    // 如果邮箱和密码匹配，则 user 是查询到的用户对象，否则就是 null
+    if (!user) {
+      return res.status(200).json({
+        err_code: 1,
+        message: 'Email or password is invalid.'
+      })
+    }
+
+    // 用户存在，登陆成功，通过 Session 记录登陆状态
+    req.session.user = user
+
+    res.status(200).json({
+      err_code: 0,
+      message: 'OK'
+    })
+  })
+```
+
+
+
+#### 查询所有
+
+#### 查询单个数据
+
+### 更新数据
+
+```javascript
+User.findOne({
+    $or: [{
+        email: body.email
+      },
+      {
+        nickname: body.nickname
+      }
+    ]
+  }, function (err, data) {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: '服务端错误'
+      })
+    }
+    // console.log(data)
+    if (data) {
+      // 邮箱或者昵称已存在
+      return res.status(200).json({
+        err_code: 1,
+        message: 'Email or nickname aleady exists.'
+      })
+      return res.send(`邮箱或者密码已存在，请重试`)
+    }
+
+    // 对密码进行 md5 重复加密
+    body.password = md5(md5(body.password))
+
+    new User(body).save(function (err, user) {
+      if (err) {
+        return res.status(500).json({
+          err_code: 500,
+          message: 'Internal error.'
+        })
+      }
+
+      // 注册成功，使用 Session 记录用户的登陆状态
+      req.session.user = user
+
+      // Express 提供了一个响应方法：json
+      // 该方法接收一个对象作为参数，它会自动帮你把对象转为字符串再发送给浏览器
+      res.status(200).json({
+        err_code: 0,
+        message: 'OK'
+      })
+
+      // 服务端重定向只针对同步请求才有效，异步请求无效
+      // res.redirect('/')
+    })
+  })
+```
+
+
+
+### 删除数据
+
+
+
+##  mysql
+
+## path模块
+
++ path.isAbsolute()
+  + 看是不是绝对路径
+
++ path .basename
+
+  + 获取一个路径的文件名（包含扩展名）
+
++ path.dirname
+
+  + 获取一个路径的目录部分
+
++ path.extname
+
+  + 获取扩展名
+
++ path.join
+
+  + 当你需要路径拼接的时候，推荐使用这个方法
+
++ path.parse
+  + 把一个路径转换成对象
+    + root根路径
+    + dir目录
+    + base包含后缀名的文件名
+    + ext后缀名
+    + name不包含后缀名的文件名
+    + 
+
+####  __dirname(文件所在位置)
+
+ ```javascript
+app.use('/public/', express.static(path.join(__dirname, './public/')))
+ ```
+
+#### ——filename（文件所在位置精确到文件）
+
+## 中间件
+
+和拦截器差不多
+
+### 配置404的中间件（在路由之后）
+
+```javascript
+app.use(function(req,res){
+    res.render('404.html')
+})
+```
+
+### 配置一个全局错误处理(在路由之后)
+
+```javascript
+if（err）{
+    //直接找有四个参数的
+    next(err)
+}
+
+//要写全参数，必须写四个
+app.use(function(err,req,res,next){
+   // console.log('error')
+    res.send(500).send(err.message)
+})
 ```
 
